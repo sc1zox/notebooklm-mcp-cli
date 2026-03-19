@@ -22,6 +22,7 @@ from . import constants
 from .retry import is_retryable_error, DEFAULT_MAX_RETRIES, DEFAULT_BASE_DELAY, DEFAULT_MAX_DELAY
 from .data_types import ConversationTurn
 from .errors import ClientAuthenticationError as AuthenticationError
+from .errors import RPCError
 from .utils import (
     RPC_NAMES,
     _format_debug_json,
@@ -457,16 +458,42 @@ class BaseClient:
         return results
 
     def _extract_rpc_result(self, parsed_response: list, rpc_id: str) -> Any:
-        """Extract the result for a specific RPC ID from the parsed response."""
+        """Extract the result for a specific RPC ID from the parsed response.
+
+        Checks for structured error payloads in item[5]. Known error layout:
+            ["wrb.fr", rpc_id, result_or_null, ..., error_list, "generic"]
+        where error_list = [error_code, null, [[detail_type_url, [sub_codes...]]]]
+        """
         for chunk in parsed_response:
             if isinstance(chunk, list):
                 for item in chunk:
                     if isinstance(item, list) and len(item) >= 3:
                         if item[0] == "wrb.fr" and item[1] == rpc_id:
-                            # Check for generic error signature (e.g. auth expired)
-                            # Signature: ["wrb.fr", "RPC_ID", null, null, null, [16], "generic"]
-                            if len(item) > 6 and item[6] == "generic" and isinstance(item[5], list) and 16 in item[5]:
-                                raise AuthenticationError("RPC Error 16: Authentication expired")
+                            # Check for structured error in item[5]
+                            if len(item) > 5 and isinstance(item[5], list) and item[5]:
+                                error_code = item[5][0] if isinstance(item[5][0], int) else None
+
+                                if error_code is not None:
+                                    # Auth error (code 16) — existing behavior
+                                    if error_code == 16:
+                                        raise AuthenticationError("RPC Error 16: Authentication expired")
+
+                                    # All other error codes — extract detail type
+                                    detail_type = ""
+                                    detail_data = None
+                                    if len(item[5]) > 2 and isinstance(item[5][2], list):
+                                        for detail in item[5][2]:
+                                            if isinstance(detail, list) and len(detail) > 0:
+                                                detail_type = detail[0] if isinstance(detail[0], str) else ""
+                                                detail_data = detail[1] if len(detail) > 1 else None
+                                                break
+
+                                    raise RPCError(
+                                        f"API error (code {error_code}): {detail_type or 'unknown'}",
+                                        error_code=error_code,
+                                        detail_type=detail_type,
+                                        detail_data=detail_data,
+                                    )
 
                             result_str = item[2]
                             if isinstance(result_str, str):

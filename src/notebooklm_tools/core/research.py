@@ -58,8 +58,6 @@ class ResearchMixin(BaseClient):
         # Map to internal constants
         source_type = self.RESEARCH_SOURCE_WEB if source_lower == "web" else self.RESEARCH_SOURCE_DRIVE
 
-        client = self._get_client()
-
         if mode_lower == "fast":
             # Fast Research: Ljjv0c
             params = [[query, source_type], None, 1, notebook_id]
@@ -69,14 +67,7 @@ class ResearchMixin(BaseClient):
             params = [None, [1], [query, source_type], 5, notebook_id]
             rpc_id = self.RPC_START_DEEP_RESEARCH
 
-        body = self._build_request_body(rpc_id, params)
-        url = self._build_url(rpc_id, f"/notebook/{notebook_id}")
-
-        response = client.post(url, content=body)
-        response.raise_for_status()
-
-        parsed = self._parse_response(response.text)
-        result = self._extract_rpc_result(parsed, rpc_id)
+        result = self._call_rpc(rpc_id, params, path=f"/notebook/{notebook_id}")
 
         if result and isinstance(result, list) and len(result) > 0:
             task_id = result[0]

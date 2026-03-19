@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-03-19
+
+### Fixed
+- **Deep Research Transient Errors (Issue #98)** — Deep research (`--mode deep`) no longer silently fails with a generic "no confirmation from API" message when Google returns a transient error. The structured error payload (e.g., `DeepResearchErrorDetail` code 3) is now properly detected and surfaced with an actionable message: *"Google API error code 3 (DeepResearchErrorDetail). This is likely a transient issue. Try again in a few minutes, or use --mode fast."*
+- **Research RPC Infrastructure** — Refactored `start_research()` to use the standard `_call_rpc()` pipeline instead of raw HTTP calls. This gives deep and fast research automatic auth retry, server error retries, and enhanced debug logging for free.
+
+### Added
+- **`RPCError` exception class** — New structured error type in `core/errors.py` for Google batchexecute errors with error code, detail type, and detail data attributes. All non-auth RPC errors (not just code 16) are now properly raised.
+- **6 new unit tests** (3 core-level, 3 service-level) for RPCError detection and user-friendly error messages (total: 634 tests)
+
 ## [0.5.0] - 2026-03-18
 
 ### Fixed
