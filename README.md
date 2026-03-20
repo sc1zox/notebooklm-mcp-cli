@@ -84,7 +84,7 @@ Then use natural language: *"Create a notebook about quantum computing and gener
 | Web/Drive research | `nlm research start` | `research_start` |
 | Share notebook | `nlm share public/invite` | `notebook_share_*` |
 | Sync Drive sources | `nlm source sync` | `source_sync_drive` |
-| Batch operations | `nlm batch query/create/delete` | `batch` |
+| Batch operations | `nlm batch query/create/studio` (notebook batch delete disabled) | `batch` |
 | Cross-notebook query | `nlm cross query` | `cross_notebook_query` |
 | Pipelines (multi-step workflows) | `nlm pipeline run/list` | `pipeline` |
 | Tag & smart select | `nlm tag add/list/select` | `tag` |

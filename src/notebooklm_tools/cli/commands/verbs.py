@@ -507,11 +507,22 @@ def delete_notebook_verb(
 @delete_app.command("source")
 def delete_source_verb(
     source: str = typer.Argument(..., help="Source ID"),
+    notebook: str = typer.Option(
+        ...,
+        "--notebook",
+        "-n",
+        help="Notebook ID containing the source",
+    ),
     confirm: bool = typer.Option(False, "--confirm", "-y", help="Skip confirmation prompt"),
     profile: str | None = typer.Option(None, "--profile", "-p", help="Profile to use"),
 ) -> None:
     """Delete a source from notebook."""
-    delete_source(source_ids=[source], confirm=confirm, profile=profile)
+    delete_source(
+        source_ids=[source],
+        notebook_id=notebook,
+        confirm=confirm,
+        profile=profile,
+    )
 
 
 @delete_app.command("artifact")

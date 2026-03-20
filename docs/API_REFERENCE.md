@@ -127,8 +127,9 @@ source_sync_drive(source_ids=["id1", "id2"], confirm=True)
 
 ### Delete Sources
 ```python
-# Delete a source from notebook (after user confirmation)
-source_delete(source_id="source-uuid", confirm=True)
+# Delete a source from notebook (after user confirmation).
+# Targets must be real sources in that notebook; notebook IDs and notebook-typed entries are rejected.
+source_delete(notebook_id="notebook-uuid", source_id="source-uuid", confirm=True)
 ```
 
 ### Research and Import Sources

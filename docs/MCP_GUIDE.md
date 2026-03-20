@@ -41,7 +41,7 @@ nlm login
 | `notebook_get` | Get notebook details with sources |
 | `notebook_describe` | Get AI summary and suggested topics |
 | `notebook_rename` | Rename a notebook |
-| `notebook_delete` | Delete notebook (requires `confirm=True`) |
+| `notebook_delete` | Disabled by default — cannot delete whole notebooks via MCP (use NotebookLM web UI; optional `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1`) |
 
 ### Sources (6 tools)
 
@@ -50,7 +50,7 @@ nlm login
 | `source_add` | **Unified** - Add URL, text, file, or Drive source |
 | `source_list_drive` | List sources with Drive freshness status |
 | `source_sync_drive` | Sync stale Drive sources |
-| `source_delete` | Delete source (requires `confirm=True`) |
+| `source_delete` | Delete source in a notebook (requires `notebook_id`, `confirm=True`; blocks notebook IDs) |
 | `source_describe` | Get AI summary with keywords |
 | `source_get_content` | Get raw text content |
 
@@ -159,7 +159,7 @@ note(notebook_id, action="delete", note_id="...", confirm=True)
 
 | Tool | Description |
 |------|-------------|
-| `batch` | **Unified** — Batch operations across multiple notebooks (action: query, add_source, create, delete, studio) |
+| `batch` | **Unified** — Batch operations (action: query, add_source, create, studio). `delete` is disabled (no batch notebook wipe via MCP). |
 | `cross_notebook_query` | Query multiple notebooks and get aggregated answers with per-notebook citations |
 
 **`batch` actions:**
@@ -167,7 +167,7 @@ note(notebook_id, action="delete", note_id="...", confirm=True)
 batch(action="query", query="What are the key findings?", notebook_names="AI Research, Dev Tools")
 batch(action="add_source", source_url="https://...", tags="ai,research")
 batch(action="create", titles="Project A, Project B, Project C")
-batch(action="delete", notebook_names="Old Project", confirm=True)
+# batch(action="delete", ...) — disabled; use NotebookLM web UI to remove notebooks
 batch(action="studio", artifact_type="audio", tags="research", confirm=True)
 ```
 

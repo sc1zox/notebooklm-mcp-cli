@@ -58,7 +58,6 @@ VALID_ACTIONS = {
     "notebook_query",
     "studio_create",
     "notebook_create",
-    "notebook_delete",
 }
 
 
@@ -156,9 +155,6 @@ def _execute_step(
     elif action == "notebook_create":
         title = params.get("title", "")
         return notebooks_service.create_notebook(client, title)
-
-    elif action == "notebook_delete":
-        return notebooks_service.delete_notebook(client, notebook_id)
 
     else:
         raise ValidationError(

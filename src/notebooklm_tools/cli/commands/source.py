@@ -298,6 +298,12 @@ def rename_source(
 @app.command("delete")
 def delete_source(
     source_ids: list[str] = typer.Argument(..., help="Source ID(s) to delete"),  # noqa: B008
+    notebook_id: str = typer.Option(
+        ...,
+        "--notebook",
+        "-n",
+        help="Notebook ID containing the source(s)",
+    ),
     confirm: bool = typer.Option(False, "--confirm", "-y", help="Skip confirmation"),
     profile: str | None = typer.Option(None, "--profile", "-p", help="Profile to use"),
 ) -> None:
@@ -306,9 +312,10 @@ def delete_source(
     Accepts one or more source IDs for single or bulk deletion.
 
     Examples:
-        nlm source delete <source-id> --confirm
-        nlm source delete <id1> <id2> <id3> --confirm
+        nlm source delete <source-id> --notebook <notebook-id> --confirm
+        nlm source delete <id1> <id2> <id3> -n <notebook-id> --confirm
     """
+    resolved_nb = get_alias_manager().resolve(notebook_id)
     resolved_ids = [get_alias_manager().resolve(sid) for sid in source_ids]
 
     if not confirm:
@@ -326,10 +333,10 @@ def delete_source(
     try:
         with get_client(profile) as client:
             if len(resolved_ids) == 1:
-                sources_service.delete_source(client, resolved_ids[0])
+                sources_service.delete_source(client, resolved_nb, resolved_ids[0])
                 console.print(f"[green]✓[/green] Deleted source: {resolved_ids[0]}")
             else:
-                sources_service.delete_sources(client, resolved_ids)
+                sources_service.delete_sources(client, resolved_nb, resolved_ids)
                 console.print(f"[green]✓[/green] Deleted {len(resolved_ids)} sources")
     except (ServiceError, NLMError) as e:
         handle_error(e, json_output=locals().get("json_output", False))

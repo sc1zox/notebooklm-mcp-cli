@@ -113,11 +113,14 @@ def notebook_rename(notebook_id: str, new_title: str) -> ResultDict:
 
 @logged_tool()
 def notebook_delete(notebook_id: str, confirm: bool = False) -> ResultDict:
-    """Delete notebook permanently. IRREVERSIBLE. Requires confirm=True.
+    """Delete notebook permanently (disabled by default).
+
+    Whole-notebook deletion is blocked unless NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1.
+    Otherwise returns an error; remove notebooks in the NotebookLM web UI.
 
     Args:
         notebook_id: Notebook UUID
-        confirm: Must be True after user approval
+        confirm: Must be True after user approval (still required when deletion is enabled)
     """
     if not confirm:
         return {

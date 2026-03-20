@@ -76,8 +76,9 @@ def test_create_notebook_uses_correct_rpc():
             assert call_args[0][0] == "CCqFvf"  # RPC_CREATE_NOTEBOOK
 
 
-def test_delete_notebook_uses_correct_rpc():
+def test_delete_notebook_uses_correct_rpc(monkeypatch):
     """Test that delete_notebook calls the correct RPC."""
+    monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
     from notebooklm_tools.core.notebooks import NotebookMixin
 
     with patch.object(NotebookMixin, "_refresh_auth_tokens"):  # noqa: SIM117

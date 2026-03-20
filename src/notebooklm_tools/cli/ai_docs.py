@@ -106,7 +106,7 @@ nlm status artifacts <notebook>
 | `nlm video` | Create video overviews (create) |
 | `nlm data-table` | Create data tables (create) |
 | `nlm share` | Manage notebook sharing (status, public, private, invite) |
-| `nlm batch` | Batch operations across multiple notebooks (query, add-source, create, delete, studio) |
+| `nlm batch` | Batch operations across multiple notebooks (query, add-source, create, studio; batch notebook delete disabled) |
 | `nlm cross` | Cross-notebook aggregated query (query) |
 | `nlm pipeline` | Multi-step notebook workflows (list, run) |
 | `nlm tag` | Tag notebooks and find relevant ones (add, remove, list, select) |
@@ -121,7 +121,7 @@ nlm status artifacts <notebook>
 | `nlm create` | Create resources (notebook, audio, video, report, infographic, slides, quiz, flashcards, data-table, mindmap) |
 | `nlm list` | List resources (notebooks, sources, artifacts, aliases, stale-sources) |
 | `nlm get` | Get details (notebook, source, config, alias) |
-| `nlm delete` | Delete resources (notebook, source, artifact, alias) |
+| `nlm delete` | Delete resources (source, artifact, alias; whole-notebook delete disabled by default) |
 | `nlm add` | Add sources (url, text, drive) |
 | `nlm describe` | Get AI summaries (notebook, source) |
 | `nlm query` | Chat with sources (notebook) |
@@ -195,7 +195,7 @@ nlm notebook get <id>                  # Get notebook details
 nlm notebook describe <id>             # AI summary with topics
 nlm notebook describe <id> --json      # JSON output
 nlm notebook rename <id> "New Title"   # Rename notebook
-nlm notebook delete <id> --confirm     # Delete permanently
+# nlm notebook delete — disabled by default (NotebookLM web UI; NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1)
 nlm notebook query <id> "question"     # Chat with sources
 nlm notebook query <id> "question" --json  # JSON output
 nlm notebook query <id> "follow up" --conversation-id <cid>  # Persists in web UI history
@@ -209,7 +209,7 @@ nlm create notebook "Title"            # Create new notebook
 nlm get notebook <id>                  # Get notebook details
 nlm describe notebook <id>             # AI summary with topics
 nlm rename notebook <id> "New Title"   # Rename notebook
-nlm delete notebook <id> --confirm     # Delete permanently
+# nlm delete notebook — disabled by default (use NotebookLM web UI)
 nlm query notebook <id> "question"     # Chat with sources
 ```
 
@@ -618,7 +618,7 @@ nlm batch add-source --url "https://..." --notebooks "id1,id2"
 nlm batch add-source --url "https://..." --tags "research"
 
 nlm batch create "Project A, Project B, Project C"        # Create multiple
-nlm batch delete --notebooks "id1,id2" --confirm
+# nlm batch delete — disabled by default
 nlm batch studio --type audio --tags "research" --confirm
 ```
 

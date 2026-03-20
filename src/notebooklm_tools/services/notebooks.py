@@ -322,6 +322,18 @@ def delete_notebook(
     Raises:
         ServiceError: If deletion fails
     """
+    from ..utils.config import allow_notebook_deletion
+
+    if not allow_notebook_deletion():
+        raise ValidationError(
+            "Whole-notebook deletion is disabled.",
+            user_message=(
+                "Deleting entire notebooks through this CLI or MCP is disabled. "
+                "Remove notebooks in the NotebookLM web app if needed. "
+                "(Maintainers: set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to re-enable.)"
+            ),
+        )
+
     try:
         result = client.delete_notebook(notebook_id)
     except Exception as e:

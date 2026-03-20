@@ -169,6 +169,7 @@ def source_rename(notebook_id: str, source_id: str, new_title: str) -> ResultDic
 
 @logged_tool()
 def source_delete(
+    notebook_id: str,
     source_id: str | None = None,
     source_ids: list[str] | None = None,
     confirm: bool = False,
@@ -176,6 +177,7 @@ def source_delete(
     """Delete source(s) permanently. IRREVERSIBLE. Requires confirm=True.
 
     Args:
+        notebook_id: Notebook UUID that contains the source(s)
         source_id: Source UUID to delete (single)
         source_ids: List of source UUIDs to delete (bulk, alternative to source_id)
         confirm: Must be True after user approval
@@ -194,7 +196,7 @@ def source_delete(
 
         # Bulk delete: when source_ids list is provided
         if coerced_source_ids:
-            sources_service.delete_sources(client, coerced_source_ids)
+            sources_service.delete_sources(client, notebook_id, coerced_source_ids)
             return {
                 "status": "success",
                 "message": f"{len(coerced_source_ids)} sources have been permanently deleted.",
@@ -205,7 +207,7 @@ def source_delete(
         if not source_id:
             return error_result("Either source_id or source_ids is required.")
 
-        sources_service.delete_source(client, source_id)
+        sources_service.delete_source(client, notebook_id, source_id)
         return {
             "status": "success",
             "message": f"Source {source_id} has been permanently deleted.",

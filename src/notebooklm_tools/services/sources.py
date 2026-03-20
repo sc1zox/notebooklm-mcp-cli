@@ -423,6 +423,76 @@ def sync_drive_sources(
     return results
 
 
+_NOTEBOOK_DELETE_VIA_SOURCE_USER_MESSAGE = (
+    "This target is a whole notebook, not a normal source. "
+    "Notebook removal is not available through this CLI/MCP; use the NotebookLM web app."
+)
+
+
+def ensure_sources_deletable(
+    client: NotebookLMClient,
+    notebook_id: str,
+    source_ids: list[str],
+) -> None:
+    if not notebook_id or not str(notebook_id).strip():
+        raise ValidationError("notebook_id is required to delete sources.")
+
+    seen: set[str] = set()
+    unique: list[str] = []
+    for sid in source_ids:
+        if not sid or not str(sid).strip():
+            raise ValidationError("Empty source ID in delete list.")
+        s = str(sid).strip()
+        if s not in seen:
+            seen.add(s)
+            unique.append(s)
+
+    nb = str(notebook_id).strip()
+
+    try:
+        all_notebooks = client.list_notebooks()
+    except Exception as e:
+        raise ServiceError(
+            f"Failed to list notebooks for delete check: {e}",
+            user_message="Could not verify targets before delete.",
+        )
+
+    notebook_id_set: set[str] = set()
+    for item in all_notebooks:
+        nid = getattr(item, "id", None)
+        if nid is not None:
+            notebook_id_set.add(str(nid))
+
+    for sid in unique:
+        if sid in notebook_id_set:
+            raise ValidationError(
+                f"ID {sid} is a notebook, not a deletable source.",
+                user_message=_NOTEBOOK_DELETE_VIA_SOURCE_USER_MESSAGE,
+            )
+
+    try:
+        rows = client.get_notebook_sources_with_types(nb)
+    except Exception as e:
+        raise ServiceError(
+            f"Failed to load sources for delete check: {e}",
+            user_message="Could not verify sources before delete.",
+        )
+
+    by_id: dict[str, dict] = {}
+    for row in rows:
+        rid = row.get("id")
+        if rid is not None:
+            by_id[str(rid)] = row
+
+    for sid in unique:
+        row = by_id.get(sid)
+        if row is None:
+            raise ValidationError(
+                f"Source {sid} is not in notebook {nb}.",
+                user_message="That source is not in this notebook. Check the notebook ID and source IDs.",
+            )
+
+
 def rename_source(
     client: NotebookLMClient,
     notebook_id: str,
@@ -469,17 +539,20 @@ def rename_source(
 
 def delete_source(
     client: NotebookLMClient,
+    notebook_id: str,
     source_id: str,
 ) -> None:
     """Delete a source permanently.
 
     Args:
         client: Authenticated NotebookLM client
+        notebook_id: Notebook UUID that contains the source
         source_id: Source UUID
 
     Raises:
         ServiceError: If deletion fails
     """
+    ensure_sources_deletable(client, notebook_id, [source_id])
     try:
         result = client.delete_source(source_id)
         if not result:
@@ -498,12 +571,14 @@ def delete_source(
 
 def delete_sources(
     client: NotebookLMClient,
+    notebook_id: str,
     source_ids: list[str],
 ) -> None:
     """Delete multiple sources permanently in a single request.
 
     Args:
         client: Authenticated NotebookLM client
+        notebook_id: Notebook UUID that contains the sources
         source_ids: List of source UUIDs to delete
 
     Raises:
@@ -513,6 +588,7 @@ def delete_sources(
     if not source_ids:
         raise ValidationError("No source IDs provided for bulk delete.")
 
+    ensure_sources_deletable(client, notebook_id, source_ids)
     try:
         result = client.delete_sources(source_ids)
         if not result:

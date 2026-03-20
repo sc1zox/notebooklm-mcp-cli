@@ -19,6 +19,9 @@ pytestmark = pytest.mark.skipif(
     not os.environ.get("NOTEBOOKLM_E2E"), reason="E2E tests disabled. Set NOTEBOOKLM_E2E=1 to run."
 )
 
+if os.environ.get("NOTEBOOKLM_E2E"):
+    os.environ.setdefault("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
+
 
 @pytest.fixture(scope="module")
 def client():

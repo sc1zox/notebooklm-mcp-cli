@@ -250,6 +250,13 @@ class NotebookMixin(BaseClient):
         Returns:
             True on success, False on failure
         """
+        from ..utils.config import allow_notebook_deletion
+
+        if not allow_notebook_deletion():
+            raise RuntimeError(
+                "Notebook deletion is disabled. Set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to enable."
+            )
+
         params = [[notebook_id], [2]]
         result = self._call_rpc(self.RPC_DELETE_NOTEBOOK, params)
 

@@ -56,7 +56,7 @@ nlm notebook create "Title"            # Create notebook
 nlm notebook get <id>                  # Get details
 nlm notebook describe <id>             # AI summary
 nlm notebook rename <id> "New Title"   # Rename
-nlm notebook delete <id> --confirm     # Delete (IRREVERSIBLE)
+# nlm notebook delete — disabled by default; use NotebookLM web UI (NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to enable)
 nlm notebook query <id> "question"     # Chat with sources
 ```
 
@@ -165,7 +165,7 @@ nlm batch query "Summarize" --tags "ai,research"          # Query by tag
 nlm batch query "Summarize" --all                         # Query ALL notebooks
 nlm batch add-source --url "https://..." --notebooks "id1,id2"
 nlm batch create "Project A, Project B, Project C"        # Create multiple
-nlm batch delete --notebooks "id1,id2" --confirm          # Delete multiple
+# nlm batch delete — disabled by default (same env var as notebook delete)
 nlm batch studio --type audio --tags "research" --confirm # Generate across notebooks
 ```
 

@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from notebooklm_tools.core.data_types import Notebook
 from notebooklm_tools.services.errors import ServiceError, ValidationError
 from notebooklm_tools.services.sources import (
     VALID_SOURCE_TYPES,
@@ -42,6 +43,7 @@ def mock_client():
     client.check_source_freshness.return_value = True
     # Sync/delete/describe/content
     client.sync_drive_source.return_value = True
+    client.list_notebooks.return_value = []
     client.delete_source.return_value = True
     client.get_source_guide.return_value = {"summary": "Test summary", "keywords": ["a", "b"]}
     client.get_source_fulltext.return_value = {
@@ -212,18 +214,25 @@ class TestDeleteSource:
     """Test delete_source function."""
 
     def test_success(self, mock_client):
-        delete_source(mock_client, "src-1")
-        mock_client.delete_source.assert_called_once_with("src-1")
+        delete_source(mock_client, "nb-1", "s1")
+        mock_client.delete_source.assert_called_once_with("s1")
 
     def test_falsy_result_raises(self, mock_client):
         mock_client.delete_source.return_value = False
         with pytest.raises(ServiceError, match="Delete returned falsy"):
-            delete_source(mock_client, "src-1")
+            delete_source(mock_client, "nb-1", "s1")
 
     def test_api_error(self, mock_client):
         mock_client.delete_source.side_effect = RuntimeError("fail")
         with pytest.raises(ServiceError, match="Failed to delete"):
-            delete_source(mock_client, "src-1")
+            delete_source(mock_client, "nb-1", "s1")
+
+    def test_rejects_id_that_is_a_notebook(self, mock_client):
+        mock_client.list_notebooks.return_value = [
+            Notebook(id="notebook-uuid", title="My NB", source_count=0, sources=[]),
+        ]
+        with pytest.raises(ValidationError, match="notebook"):
+            delete_source(mock_client, "nb-1", "notebook-uuid")
 
 
 class TestDescribeSource:
@@ -368,20 +377,25 @@ class TestDeleteSources:
     """Test delete_sources (bulk) function."""
 
     def test_batch_delete(self, mock_client):
+        mock_client.get_notebook_sources_with_types.return_value = [
+            {"id": "s1", "title": "Source 1", "source_type_name": "URL", "can_sync": False},
+            {"id": "s2", "title": "Source 2", "source_type_name": "Drive", "can_sync": True, "drive_doc_id": "d1"},
+            {"id": "s3", "title": "Source 3", "source_type_name": "URL", "can_sync": False},
+        ]
         mock_client.delete_sources.return_value = True
-        delete_sources(mock_client, ["s1", "s2", "s3"])
+        delete_sources(mock_client, "nb-1", ["s1", "s2", "s3"])
         mock_client.delete_sources.assert_called_once_with(["s1", "s2", "s3"])
 
     def test_empty_list_raises(self, mock_client):
         with pytest.raises(ValidationError, match="No source IDs"):
-            delete_sources(mock_client, [])
+            delete_sources(mock_client, "nb-1", [])
 
     def test_falsy_result_raises(self, mock_client):
         mock_client.delete_sources.return_value = False
         with pytest.raises(ServiceError, match="Bulk delete returned falsy"):
-            delete_sources(mock_client, ["s1"])
+            delete_sources(mock_client, "nb-1", ["s1"])
 
     def test_api_error(self, mock_client):
         mock_client.delete_sources.side_effect = RuntimeError("fail")
         with pytest.raises(ServiceError, match="Failed to delete"):
-            delete_sources(mock_client, ["s1"])
+            delete_sources(mock_client, "nb-1", ["s1"])

@@ -23,7 +23,7 @@ def batch(
     - query: Query multiple notebooks with the same question
     - add_source: Add the same source URL to multiple notebooks
     - create: Create multiple notebooks at once
-    - delete: Delete multiple notebooks (IRREVERSIBLE, requires confirm=True)
+    - delete: Disabled (whole-notebook deletion is not available through MCP)
     - studio: Generate studio artifacts across multiple notebooks
 
     Args:
@@ -72,15 +72,14 @@ def batch(
             return {"status": "success", **result}
 
         elif action == "delete":
-            if not confirm:
-                return {
-                    "status": "error",
-                    "error": "Batch delete not confirmed. Ask the user to confirm before setting confirm=True.",
-                    "warning": "This action is IRREVERSIBLE. Multiple notebooks will be permanently deleted.",
-                }
-            client = get_client()
-            result = batch_service.batch_delete(client, names, tag_list, confirm=True)
-            return {"status": "success", **result}
+            return {
+                "status": "error",
+                "error": (
+                    "Batch notebook deletion is disabled. Whole notebooks cannot be removed through this tool; "
+                    "delete is only available in the NotebookLM web UI (or set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 "
+                    "for local maintenance)."
+                ),
+            }
 
         elif action == "studio":
             client = get_client()

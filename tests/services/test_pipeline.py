@@ -186,10 +186,7 @@ class TestPipelineRun:
         assert result["total_steps"] == 2
         assert len(result["steps"]) == 1  # stopped after first failure
 
-    @patch("notebooklm_tools.services.pipeline.notebooks_service")
-    def test_run_notebook_delete_action(self, mock_notebooks, mock_client, pipelines_dir):
-        mock_notebooks.delete_notebook.return_value = {"deleted": True}
-
+    def test_run_notebook_delete_pipeline_rejected(self, mock_client, pipelines_dir):
         import yaml
 
         pipeline_dir = pipelines_dir / "pipelines"
@@ -204,8 +201,9 @@ class TestPipelineRun:
         )
 
         result = pipeline_run(mock_client, "nb-001", "delete-test")
-        assert result["succeeded"] == 1
-        mock_notebooks.delete_notebook.assert_called_once_with(mock_client, "nb-001")
+        assert result["succeeded"] == 0
+        assert result["steps"][0]["success"] is False
+        assert "notebook_delete" in (result["steps"][0]["error"] or "")
 
     @patch("notebooklm_tools.services.pipeline.chat_service")
     def test_run_with_variables(self, mock_chat, mock_client, pipelines_dir):

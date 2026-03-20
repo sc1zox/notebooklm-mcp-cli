@@ -54,6 +54,17 @@ def get_default_language() -> str:
     return os.environ.get("NOTEBOOKLM_HL", "en")
 
 
+def allow_notebook_deletion() -> bool:
+    """Whether whole-notebook deletion is allowed (CLI/MCP/client RPC).
+
+    Default False: notebook_delete, batch delete, and the delete-notebook RPC are
+    blocked so agents cannot wipe notebooks. Set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1
+    to re-enable (e.g. local maintenance or legacy tests).
+    """
+    v = os.environ.get("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "").strip().lower()
+    return v in ("1", "true", "yes", "on")
+
+
 def get_storage_dir() -> Path:
     """Get the main storage directory (~/.notebooklm-mcp-cli/).
 

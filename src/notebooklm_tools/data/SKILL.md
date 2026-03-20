@@ -97,7 +97,7 @@ User wants to...
     ├─► List notebooks → nlm notebook list
     ├─► List sources → nlm source list <nb-id>
     ├─► Delete source → nlm source delete <source-id> --confirm
-    └─► Delete notebook → nlm notebook delete <nb-id> --confirm
+    └─► Remove notebook → NotebookLM web UI (CLI/MCP notebook delete disabled by default)
 ```
 
 ## Command Categories
@@ -148,7 +148,7 @@ nlm login profile rename <old> <new> # Rename a profile
 
 #### MCP Tools
 
-Use tools: `notebook_list`, `notebook_create`, `notebook_get`, `notebook_describe`, `notebook_query`, `notebook_rename`, `notebook_delete`. All accept `notebook_id` parameter. Delete requires `confirm=True`.
+Use tools: `notebook_list`, `notebook_create`, `notebook_get`, `notebook_describe`, `notebook_query`, `notebook_rename`, `notebook_delete` (disabled by default — cannot remove whole notebooks via MCP; use the NotebookLM site, or `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1` for maintenance).
 
 #### CLI Commands
 ```bash
@@ -160,7 +160,7 @@ nlm notebook get <id>                  # Get notebook details
 nlm notebook describe <id>             # AI-generated summary + suggested topics
 nlm notebook query <id> "question"     # One-shot Q&A with sources
 nlm notebook rename <id> "New Title"   # Rename notebook
-nlm notebook delete <id> --confirm     # PERMANENT deletion
+# nlm notebook delete — disabled by default (use NotebookLM web UI); NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to enable
 ```
 
 ### 3. Source Management
@@ -555,7 +555,7 @@ nlm batch query "Summarize" --tags "ai,research"      # Query by tag
 nlm batch query "Summarize" --all                      # Query ALL notebooks
 nlm batch add-source --url "https://..." --notebooks "id1,id2"
 nlm batch create "Project A, Project B, Project C"     # Create multiple
-nlm batch delete --notebooks "id1,id2" --confirm       # Delete multiple
+# nlm batch delete — disabled by default (same as notebook delete)
 nlm batch studio --type audio --tags "research" --confirm  # Generate across notebooks
 ```
 

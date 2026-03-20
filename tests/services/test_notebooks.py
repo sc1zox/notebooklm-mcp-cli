@@ -207,19 +207,27 @@ class TestRenameNotebook:
 class TestDeleteNotebook:
     """Test delete_notebook service function."""
 
-    def test_successful_deletion(self, mock_client):
+    def test_disabled_by_default(self, mock_client):
+        with pytest.raises(ValidationError, match="disabled"):
+            delete_notebook(mock_client, "nb-123")
+        mock_client.delete_notebook.assert_not_called()
+
+    def test_successful_deletion_when_allowed(self, mock_client, monkeypatch):
+        monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
         mock_client.delete_notebook.return_value = True
 
         result = delete_notebook(mock_client, "nb-123")
 
         assert "deleted" in result["message"].lower()
 
-    def test_falsy_result_raises_service_error(self, mock_client):
+    def test_falsy_result_raises_service_error(self, mock_client, monkeypatch):
+        monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
         mock_client.delete_notebook.return_value = None
         with pytest.raises(ServiceError, match="falsy result"):
             delete_notebook(mock_client, "nb-123")
 
-    def test_api_error_raises_service_error(self, mock_client):
+    def test_api_error_raises_service_error(self, mock_client, monkeypatch):
+        monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
         mock_client.delete_notebook.side_effect = RuntimeError("fail")
         with pytest.raises(ServiceError, match="Failed to delete notebook"):
             delete_notebook(mock_client, "nb-123")

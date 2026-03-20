@@ -8,6 +8,7 @@ from . import chat as chat_service
 from . import notebooks as notebooks_service
 from . import sources as sources_service
 from . import studio as studio_service
+from ..utils.config import allow_notebook_deletion
 from .errors import ValidationError
 
 
@@ -208,6 +209,16 @@ def batch_delete(
         raise ValidationError(
             "Batch delete requires confirm=True.",
             user_message="Batch delete is IRREVERSIBLE. Set confirm=True after user approval.",
+        )
+
+    if not allow_notebook_deletion():
+        raise ValidationError(
+            "Batch notebook deletion is disabled.",
+            user_message=(
+                "Deleting entire notebooks through batch operations is disabled. "
+                "Remove notebooks in the NotebookLM web app if needed. "
+                "(Maintainers: set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to re-enable.)"
+            ),
         )
 
     targets = _resolve_targets(client, notebook_names, tags, all_notebooks=False)

@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Windows Unicode: all CLI Rich consoles use safe factory (Issue #156)** — Every CLI command module and the default `Formatter` now use `make_console()` (`safe_box`, `legacy_windows=False` on Windows) instead of bare `Console()`. Complements the UTF-8 stdio bootstrap from v0.5.25 and avoids `UnicodeEncodeError` / MCP EOF on legacy Windows code pages when printing API text with arrows, smart quotes, etc. Thanks again to **@argonaut-cm** for the original EOF / Unicode analysis (v0.5.25 thanked the stdio + Rich bootstrap; this completes CLI-wide coverage).
 - **MCP reloads client after `nlm login` without manual `refresh_auth` (Issue #161)** — `get_client()` now invalidates the singleton when on-disk tokens are newer than the running client (`extracted_at` vs `_created_at`), not only when the cookie dict changes. Same-profile re-auth updates are picked up automatically. Auth expiry error message mentions `refresh_auth` as a fallback. Thanks to **@josuebustosn** for the clear repro and suggested directions.
 
+### Changed
+- **Whole-notebook deletion disabled by default** — `notebook_delete` (MCP), `nlm notebook delete`, `nlm batch delete`, `batch(action="delete")`, pipelines, and the core `delete_notebook` RPC no longer remove notebooks unless `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1` is set. Remove notebooks via the NotebookLM website instead. E2E tests set this env when `NOTEBOOKLM_E2E=1`.
+
 ## [0.5.25] - 2026-04-15
 
 ### Fixed
