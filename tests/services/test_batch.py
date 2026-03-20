@@ -111,16 +111,10 @@ class TestBatchDelete:
         with pytest.raises(ValidationError):
             batch_delete(mock_client, notebook_names=["AI Research"], confirm=False)
 
-    def test_delete_disabled_without_env(self, mock_client):
+    def test_delete_always_disabled(self, mock_client):
         with pytest.raises(ValidationError, match="disabled"):
             batch_delete(mock_client, notebook_names=["AI Research"], confirm=True)
         mock_client.delete_notebook.assert_not_called()
-
-    def test_delete_with_confirm_when_allowed(self, mock_client, monkeypatch):
-        monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
-        mock_client.delete_notebook.return_value = True
-        result = batch_delete(mock_client, notebook_names=["AI Research"], confirm=True)
-        assert result["total"] == 1
 
 
 class TestBatchStudio:

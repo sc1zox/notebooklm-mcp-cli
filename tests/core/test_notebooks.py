@@ -1,5 +1,6 @@
 """Tests for NotebookMixin class."""
 
+import pytest
 from unittest.mock import MagicMock, patch
 
 
@@ -76,29 +77,11 @@ def test_create_notebook_uses_correct_rpc():
             assert call_args[0][0] == "CCqFvf"  # RPC_CREATE_NOTEBOOK
 
 
-def test_delete_notebook_uses_correct_rpc(monkeypatch):
-    """Test that delete_notebook calls the correct RPC."""
-    monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
+def test_delete_notebook_always_disabled():
+    """Notebook delete RPC is not exposed; client raises before any HTTP call."""
     from notebooklm_tools.core.notebooks import NotebookMixin
 
-    with patch.object(NotebookMixin, "_refresh_auth_tokens"):  # noqa: SIM117
-        with patch.object(NotebookMixin, "_get_client") as mock_get_client:
-            with patch.object(NotebookMixin, "_build_request_body") as mock_build_body:
-                with patch.object(NotebookMixin, "_build_url"):
-                    with patch.object(NotebookMixin, "_parse_response"):
-                        with patch.object(NotebookMixin, "_extract_rpc_result") as mock_extract:
-                            # Setup mocks
-                            mock_client = MagicMock()
-                            mock_client.post.return_value = MagicMock(text="", status_code=200)
-                            mock_get_client.return_value = mock_client
-                            mock_extract.return_value = {}  # Non-None means success
-
-                            mixin = NotebookMixin(cookies={"test": "cookie"}, csrf_token="test")
-                            result = mixin.delete_notebook("notebook_id_123")
-
-                            # Verify correct RPC ID was used
-                            mock_build_body.assert_called_once()
-                            assert (
-                                mock_build_body.call_args[0][0] == "WWINqb"
-                            )  # RPC_DELETE_NOTEBOOK
-                            assert result is True  # Should return True on success
+    with patch.object(NotebookMixin, "_refresh_auth_tokens"):
+        mixin = NotebookMixin(cookies={"test": "cookie"}, csrf_token="test")
+        with pytest.raises(RuntimeError, match="disabled"):
+            mixin.delete_notebook("notebook_id_123")

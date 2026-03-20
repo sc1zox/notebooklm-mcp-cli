@@ -76,8 +76,7 @@ def batch(
                 "status": "error",
                 "error": (
                     "Batch notebook deletion is disabled. Whole notebooks cannot be removed through this tool; "
-                    "delete is only available in the NotebookLM web UI (or set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 "
-                    "for local maintenance)."
+                    "use the NotebookLM web UI."
                 ),
             }
 

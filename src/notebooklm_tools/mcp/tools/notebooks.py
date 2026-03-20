@@ -113,14 +113,13 @@ def notebook_rename(notebook_id: str, new_title: str) -> ResultDict:
 
 @logged_tool()
 def notebook_delete(notebook_id: str, confirm: bool = False) -> ResultDict:
-    """Delete notebook permanently (disabled by default).
+    """Delete notebook permanently — not supported; returns an error.
 
-    Whole-notebook deletion is blocked unless NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1.
-    Otherwise returns an error; remove notebooks in the NotebookLM web UI.
+    Whole-notebook removal is only possible in the NotebookLM web UI.
 
     Args:
         notebook_id: Notebook UUID
-        confirm: Must be True after user approval (still required when deletion is enabled)
+        confirm: Ignored; kept for tool schema compatibility
     """
     if not confirm:
         return {

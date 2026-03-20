@@ -1,6 +1,6 @@
 """Notebooks service — shared business logic for notebook CRUD and metadata operations."""
 
-from typing import TypedDict
+from typing import NoReturn, TypedDict
 
 from ..core.client import NotebookLMClient
 from ..utils.config import get_base_url
@@ -309,42 +309,24 @@ def rename_notebook(
 def delete_notebook(
     client: NotebookLMClient,
     notebook_id: str,
-) -> NotebookDeleteResult:
+) -> NoReturn:
     """Delete a notebook permanently.
+
+    Whole-notebook deletion is not implemented in this distribution; the client
+    RPC is blocked as well. Use the NotebookLM website to remove notebooks.
 
     Args:
         client: Authenticated NotebookLM client
         notebook_id: Notebook UUID
 
-    Returns:
-        NotebookDeleteResult
-
     Raises:
-        ServiceError: If deletion fails
+        ValidationError: Always — deletion is not available through this code path
     """
-    from ..utils.config import allow_notebook_deletion
-
-    if not allow_notebook_deletion():
-        raise ValidationError(
-            "Whole-notebook deletion is disabled.",
-            user_message=(
-                "Deleting entire notebooks through this CLI or MCP is disabled. "
-                "Remove notebooks in the NotebookLM web app if needed. "
-                "(Maintainers: set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to re-enable.)"
-            ),
-        )
-
-    try:
-        result = client.delete_notebook(notebook_id)
-    except Exception as e:
-        raise ServiceError(f"Failed to delete notebook: {e}") from e
-
-    if result:
-        return {
-            "message": f"Notebook {notebook_id} has been permanently deleted.",
-        }
-
-    raise ServiceError(
-        "Notebook deletion returned falsy result",
-        user_message="Failed to delete notebook — no confirmation from API.",
-    )
+    _ = client
+    raise ValidationError(
+        f"Whole-notebook deletion is disabled (notebook_id={notebook_id!r}).",
+        user_message=(
+            "Deleting entire notebooks through the CLI or MCP is not supported. "
+            "Remove notebooks in the NotebookLM web app."
+        ),
+    ) from None

@@ -195,7 +195,7 @@ nlm notebook get <id>                  # Get notebook details
 nlm notebook describe <id>             # AI summary with topics
 nlm notebook describe <id> --json      # JSON output
 nlm notebook rename <id> "New Title"   # Rename notebook
-# nlm notebook delete — disabled by default (NotebookLM web UI; NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1)
+# nlm notebook delete — not supported (NotebookLM web UI)
 nlm notebook query <id> "question"     # Chat with sources
 nlm notebook query <id> "question" --json  # JSON output
 nlm notebook query <id> "follow up" --conversation-id <cid>  # Persists in web UI history

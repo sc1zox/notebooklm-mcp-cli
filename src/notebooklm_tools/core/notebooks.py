@@ -239,25 +239,14 @@ class NotebookMixin(BaseClient):
         }
 
     def delete_notebook(self, notebook_id: str) -> bool:
-        """Delete a notebook permanently.
-
-        WARNING: This action is IRREVERSIBLE. The notebook and all its sources,
-        notes, and generated content will be permanently deleted.
+        """Delete notebook RPC — disabled in this build (always raises).
 
         Args:
-            notebook_id: The notebook UUID to delete
+            notebook_id: Unused while deletion is disabled
 
         Returns:
-            True on success, False on failure
+            Never returns; raises RuntimeError
         """
-        from ..utils.config import allow_notebook_deletion
-
-        if not allow_notebook_deletion():
-            raise RuntimeError(
-                "Notebook deletion is disabled. Set NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to enable."
-            )
-
-        params = [[notebook_id], [2]]
-        result = self._call_rpc(self.RPC_DELETE_NOTEBOOK, params)
-
-        return result is not None
+        raise RuntimeError(
+            "Notebook deletion is disabled in this build. Remove notebooks in the NotebookLM web UI."
+        )

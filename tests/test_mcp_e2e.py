@@ -5,7 +5,6 @@ Tests the consolidated MCP tools against the real NotebookLM API.
 Run with: NOTEBOOKLM_E2E=1 pytest tests/test_mcp_e2e.py -v
 """
 
-import contextlib
 import os
 import time
 
@@ -15,9 +14,6 @@ import pytest
 pytestmark = pytest.mark.skipif(
     not os.environ.get("NOTEBOOKLM_E2E"), reason="E2E tests disabled. Set NOTEBOOKLM_E2E=1 to run."
 )
-
-if os.environ.get("NOTEBOOKLM_E2E"):
-    os.environ.setdefault("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
 
 
 @pytest.fixture(scope="module")
@@ -60,9 +56,7 @@ def test_notebook(mcp_tools):
 
     yield notebook_id
 
-    # Cleanup
-    with contextlib.suppress(Exception):
-        mcp_tools["notebooks"].notebook_delete(notebook_id, confirm=True)
+    # notebook_delete MCP tool does not remove notebooks; cleanup via web UI if needed.
 
 
 class TestMCPNotebookTools:
@@ -75,20 +69,18 @@ class TestMCPNotebookTools:
         assert "notebooks" in result
         print(f"Found {result['count']} notebooks")
 
-    def test_notebook_create_rename_delete(self, mcp_tools):
-        """Test full notebook lifecycle."""
-        # Create
+    def test_notebook_create_rename_delete_blocked(self, mcp_tools):
+        """Create and rename work; notebook_delete returns error."""
         result = mcp_tools["notebooks"].notebook_create(title="MCP Delete Test")
         assert result["status"] == "success"
         notebook_id = result["notebook_id"]
 
-        # Rename
         result = mcp_tools["notebooks"].notebook_rename(notebook_id, "MCP Renamed Test")
         assert result["status"] == "success"
 
-        # Delete
         result = mcp_tools["notebooks"].notebook_delete(notebook_id, confirm=True)
-        assert result["status"] == "success"
+        assert result["status"] == "error"
+        assert "web" in result["error"].lower() or "disabled" in result["error"].lower()
 
     def test_notebook_describe(self, mcp_tools, test_notebook):
         """Test notebook AI summary."""

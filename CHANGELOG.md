@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP reloads client after `nlm login` without manual `refresh_auth` (Issue #161)** — `get_client()` now invalidates the singleton when on-disk tokens are newer than the running client (`extracted_at` vs `_created_at`), not only when the cookie dict changes. Same-profile re-auth updates are picked up automatically. Auth expiry error message mentions `refresh_auth` as a fallback. Thanks to **@josuebustosn** for the clear repro and suggested directions.
 
 ### Changed
-- **Whole-notebook deletion disabled by default** — `notebook_delete` (MCP), `nlm notebook delete`, `nlm batch delete`, `batch(action="delete")`, pipelines, and the core `delete_notebook` RPC no longer remove notebooks unless `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1` is set. Remove notebooks via the NotebookLM website instead. E2E tests set this env when `NOTEBOOKLM_E2E=1`.
+- **Whole-notebook deletion removed from tooling** — `notebook_delete` (MCP), `nlm notebook delete`, `nlm batch delete`, `batch(action="delete")`, pipelines, and the core `delete_notebook` method do not call Google’s delete RPC. There is no environment-variable bypass; remove notebooks only in the NotebookLM web UI.
 
 ## [0.5.25] - 2026-04-15
 

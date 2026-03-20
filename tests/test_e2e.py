@@ -7,7 +7,6 @@ Run with: pytest tests/test_e2e.py -v
 Skip with: pytest tests/ -v --ignore=tests/test_e2e.py
 """
 
-import contextlib
 import os
 import time
 from pathlib import Path
@@ -18,9 +17,6 @@ import pytest
 pytestmark = pytest.mark.skipif(
     not os.environ.get("NOTEBOOKLM_E2E"), reason="E2E tests disabled. Set NOTEBOOKLM_E2E=1 to run."
 )
-
-if os.environ.get("NOTEBOOKLM_E2E"):
-    os.environ.setdefault("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
 
 
 @pytest.fixture(scope="module")
@@ -48,9 +44,7 @@ def test_notebook(client):
 
     yield notebook
 
-    # Cleanup (best effort)
-    with contextlib.suppress(Exception):
-        client.delete_notebook(notebook.id)
+    # Notebook deletion is disabled in the client; remove test notebooks in the web UI if needed.
 
 
 class TestNotebookOperations:
@@ -63,17 +57,15 @@ class TestNotebookOperations:
         # May be empty for new accounts, but should return list
         print(f"Found {len(notebooks)} notebooks")
 
-    def test_create_and_delete_notebook(self, client):
-        """Test creating and deleting a notebook."""
-        # Create
-        notebook = client.create_notebook(title="E2E Delete Test")
+    def test_create_notebook_and_delete_blocked(self, client):
+        """Create works; client-side notebook delete is disabled."""
+        notebook = client.create_notebook(title="E2E Delete Blocked Test")
         assert notebook is not None
         assert notebook.id is not None
-        assert "E2E Delete Test" in notebook.title
+        assert "E2E Delete Blocked Test" in notebook.title
 
-        # Delete
-        result = client.delete_notebook(notebook.id)
-        assert result is True
+        with pytest.raises(RuntimeError, match="disabled"):
+            client.delete_notebook(notebook.id)
 
     def test_rename_notebook(self, client, test_notebook):
         """Test renaming a notebook."""

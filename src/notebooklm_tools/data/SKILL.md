@@ -148,7 +148,7 @@ nlm login profile rename <old> <new> # Rename a profile
 
 #### MCP Tools
 
-Use tools: `notebook_list`, `notebook_create`, `notebook_get`, `notebook_describe`, `notebook_query`, `notebook_rename`, `notebook_delete` (disabled by default — cannot remove whole notebooks via MCP; use the NotebookLM site, or `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1` for maintenance).
+Use tools: `notebook_list`, `notebook_create`, `notebook_get`, `notebook_describe`, `notebook_query`, `notebook_rename`, `notebook_delete` (returns an error — whole notebooks cannot be removed via MCP; use the NotebookLM site).
 
 #### CLI Commands
 ```bash
@@ -160,7 +160,7 @@ nlm notebook get <id>                  # Get notebook details
 nlm notebook describe <id>             # AI-generated summary + suggested topics
 nlm notebook query <id> "question"     # One-shot Q&A with sources
 nlm notebook rename <id> "New Title"   # Rename notebook
-# nlm notebook delete — disabled by default (use NotebookLM web UI); NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1 to enable
+# nlm notebook delete — not supported (use NotebookLM web UI)
 ```
 
 ### 3. Source Management

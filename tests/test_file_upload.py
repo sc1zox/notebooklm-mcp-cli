@@ -305,9 +305,8 @@ class TestFileUploadE2E:
 
 
 @pytest.fixture
-def temp_notebook(monkeypatch):
+def temp_notebook():
     """Create a temporary notebook for E2E tests."""
-    monkeypatch.setenv("NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE", "1")
     from notebooklm_tools.core.auth import load_cached_tokens
     from notebooklm_tools.core.client import NotebookLMClient
 
@@ -323,8 +322,4 @@ def temp_notebook(monkeypatch):
 
     yield notebook
 
-    # Cleanup
-    try:  # noqa: SIM105
-        client.delete_notebook(notebook.id)
-    except Exception:
-        pass  # Ignore cleanup errors
+    # Client notebook delete is disabled; delete test notebook in the web UI if desired.

@@ -41,7 +41,7 @@ nlm login
 | `notebook_get` | Get notebook details with sources |
 | `notebook_describe` | Get AI summary and suggested topics |
 | `notebook_rename` | Rename a notebook |
-| `notebook_delete` | Disabled by default — cannot delete whole notebooks via MCP (use NotebookLM web UI; optional `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1`) |
+| `notebook_delete` | Not supported — cannot delete whole notebooks via MCP (use NotebookLM web UI) |
 
 ### Sources (6 tools)
 

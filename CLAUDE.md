@@ -145,7 +145,7 @@ src/notebooklm_tools/
 | `source_get_content` | Get raw text content from a source (no AI processing) |
 | `notebook_rename` | Rename a notebook |
 | `chat_configure` | Configure chat goal/style and response length |
-| `notebook_delete` | **Disabled by default** — returns error; whole-notebook removal only via NotebookLM web UI (or `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1`) |
+| `notebook_delete` | **Not supported** — returns error; whole-notebook removal only via NotebookLM web UI |
 | `source_add` | Add source (url, text, drive, file) |
 | `notebook_query` | Ask questions (AI answers!) |
 | `source_list_drive` | List sources with types, check Drive freshness |
@@ -172,7 +172,7 @@ src/notebooklm_tools/
 | `note_delete` | Delete a note (REQUIRES confirmation) |
 
 **IMPORTANT - Operations Requiring Confirmation:**
-- **Whole-notebook deletion** is disabled in CLI/MCP by default (`notebook_delete`, `nlm notebook delete`, `nlm batch delete`, and the core delete RPC). Use the NotebookLM website to remove notebooks, or set `NOTEBOOKLM_ALLOW_NOTEBOOK_DELETE=1` for local maintenance / legacy tests.
+- **Whole-notebook deletion** is not available through this project (`notebook_delete`, `nlm notebook delete`, `nlm batch delete`, and the core delete RPC are blocked). Use the NotebookLM website to remove notebooks.
 - `source_delete` requires `confirm=True` - deletion is IRREVERSIBLE
 - `source_sync_drive` requires `confirm=True` - always show stale sources first via `source_list_drive`
 - All studio creation tools require `confirm=True` - show settings and get user approval first
