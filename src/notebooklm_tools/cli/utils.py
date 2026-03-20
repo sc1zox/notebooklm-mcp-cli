@@ -227,3 +227,13 @@ def print_update_notification() -> None:
             f"[dim]🔔 Update available:[/dim] [cyan]{__version__}[/cyan] → [green]{latest}[/green]. "
             f"[dim]Run[/dim] [bold]uv tool upgrade notebooklm-mcp-cli[/bold] [dim]to update.[/dim]"
         )
+
+
+def abort_whole_notebook_delete_cli(out: Console | None = None) -> None:
+    """Stop immediately: whole-notebook delete is not implemented in the CLI."""
+    c = out or console
+    c.print(
+        "[red]Not supported:[/red] Whole-notebook deletion is disabled in this CLI "
+        "(and in the Python client). Remove notebooks in the NotebookLM web app."
+    )
+    raise typer.Exit(1)

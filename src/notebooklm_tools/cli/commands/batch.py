@@ -111,30 +111,15 @@ def batch_create(
 @app.command("delete")
 def batch_delete(
     notebooks: str | None = typer.Option(
-        None, "--notebooks", "-n", help="Comma-separated notebook names"
+        None, "--notebooks", "-n", help="Ignored — not supported"
     ),
-    tags: str | None = typer.Option(None, "--tags", "-t", help="Comma-separated tags"),
-    confirm: bool = typer.Option(False, "--confirm", "-y", help="Confirm deletion"),
+    tags: str | None = typer.Option(None, "--tags", "-t", help="Ignored — not supported"),
+    confirm: bool = typer.Option(False, "--confirm", "-y", help="Ignored — not supported"),
 ) -> None:
-    """Delete multiple notebooks. IRREVERSIBLE."""
-    from notebooklm_tools.cli.utils import get_client
-    from notebooklm_tools.services import batch as batch_service
+    """Batch notebook delete is not available; use the NotebookLM website."""
+    from notebooklm_tools.cli.utils import abort_whole_notebook_delete_cli
 
-    if not confirm:
-        typer.confirm("This will PERMANENTLY delete multiple notebooks. Continue?", abort=True)
-        confirm = True
-
-    try:
-        client = get_client()
-        names = [n.strip() for n in notebooks.split(",") if n.strip()] if notebooks else None
-        tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
-
-        with console.status("[dim]Deleting notebooks...[/dim]"):
-            result = batch_service.batch_delete(client, names, tag_list, confirm=True)
-        _print_batch_result(result)
-    except ServiceError as e:
-        console.print(f"[red]Error:[/red] {e.user_message}")
-        raise typer.Exit(1) from e
+    abort_whole_notebook_delete_cli(console)
 
 
 @app.command("studio")

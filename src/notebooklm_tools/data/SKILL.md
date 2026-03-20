@@ -97,7 +97,7 @@ User wants to...
     ├─► List notebooks → nlm notebook list
     ├─► List sources → nlm source list <nb-id>
     ├─► Delete source → nlm source delete <source-id> --confirm
-    └─► Remove notebook → NotebookLM web UI (CLI/MCP notebook delete disabled by default)
+    └─► Remove notebook → NotebookLM web UI (CLI/MCP whole-notebook delete not supported)
 ```
 
 ## Command Categories
@@ -555,7 +555,7 @@ nlm batch query "Summarize" --tags "ai,research"      # Query by tag
 nlm batch query "Summarize" --all                      # Query ALL notebooks
 nlm batch add-source --url "https://..." --notebooks "id1,id2"
 nlm batch create "Project A, Project B, Project C"     # Create multiple
-# nlm batch delete — disabled by default (same as notebook delete)
+# nlm batch delete — not supported (same as notebook delete)
 nlm batch studio --type audio --tags "research" --confirm  # Generate across notebooks
 ```
 

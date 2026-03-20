@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Whole-notebook deletion removed from tooling** — `notebook_delete` (MCP), `nlm notebook delete`, `nlm batch delete`, `batch(action="delete")`, pipelines, and the core `delete_notebook` method do not call Google’s delete RPC. There is no environment-variable bypass; remove notebooks only in the NotebookLM web UI.
+- **CLI hard stop** — `nlm notebook delete` and `nlm batch delete` exit immediately with `abort_whole_notebook_delete_cli()` before opening a client, so an older installed `nlm` cannot be confused with the service layer alone.
 
 ## [0.5.25] - 2026-04-15
 

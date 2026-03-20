@@ -3,7 +3,12 @@
 import typer
 
 from notebooklm_tools.cli.formatters import detect_output_format, get_formatter
-from notebooklm_tools.cli.utils import get_client, handle_error, make_console
+from notebooklm_tools.cli.utils import (
+    abort_whole_notebook_delete_cli,
+    get_client,
+    handle_error,
+    make_console,
+)
 from notebooklm_tools.core.alias import get_alias_manager
 from notebooklm_tools.core.exceptions import NLMError
 from notebooklm_tools.services import (
@@ -117,26 +122,12 @@ def rename_notebook(
 
 @app.command("delete")
 def delete_notebook(
-    notebook_id: str = typer.Argument(..., help="Notebook ID"),
-    confirm: bool = typer.Option(False, "--confirm", "-y", help="Skip confirmation"),
-    profile: str | None = typer.Option(None, "--profile", "-p", help="Profile to use"),
+    notebook_id: str = typer.Argument(..., help="Notebook ID (command does not delete)"),
+    confirm: bool = typer.Option(False, "--confirm", "-y", help="Ignored — deletion not supported"),
+    profile: str | None = typer.Option(None, "--profile", "-p", help="Ignored"),
 ) -> None:
-    """Delete a notebook permanently."""
-    notebook_id = get_alias_manager().resolve(notebook_id)
-
-    if not confirm:
-        typer.confirm(
-            f"Are you sure you want to delete notebook {notebook_id}?",
-            abort=True,
-        )
-
-    try:
-        with get_client(profile) as client:
-            result = notebooks_service.delete_notebook(client, notebook_id)
-
-        console.print(f"[green]✓[/green] {result['message']}")
-    except (ServiceError, NLMError) as e:
-        handle_error(e, json_output=locals().get("json_output", False))
+    """Whole-notebook delete is not available; use the NotebookLM website."""
+    abort_whole_notebook_delete_cli(console)
 
 
 @app.command("query")
