@@ -389,10 +389,10 @@ class BaseClient:
         """Build the batchexecute request body."""
         # The params need to be JSON-encoded, then wrapped in the RPC structure
         # Use separators to match Chrome's compact format (no spaces)
-        params_json = json.dumps(params, separators=(",", ":"))
+        params_json = json.dumps(params, separators=(",", ":"), ensure_ascii=False)
 
         f_req = [[[rpc_id, params_json, None, "generic"]]]
-        f_req_json = json.dumps(f_req, separators=(",", ":"))
+        f_req_json = json.dumps(f_req, separators=(",", ":"), ensure_ascii=False)
 
         # URL encode (safe='' encodes all characters including /)
         body_parts = [f"f.req={urllib.parse.quote(f_req_json, safe='')}"]

@@ -584,7 +584,8 @@ class SourceMixin(BaseClient):
                 "PROJECT_ID": notebook_id,
                 "SOURCE_NAME": filename,
                 "SOURCE_ID": source_id,
-            }
+            },
+            ensure_ascii=False,
         )
 
         with httpx.Client(timeout=60.0, cookies=cookies) as client:

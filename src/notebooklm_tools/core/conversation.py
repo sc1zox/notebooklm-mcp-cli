@@ -249,10 +249,10 @@ class ConversationMixin(BaseClient):
         ]
 
         # Use compact JSON format matching Chrome (no spaces)
-        params_json = json.dumps(params, separators=(",", ":"))
+        params_json = json.dumps(params, separators=(",", ":"), ensure_ascii=False)
 
         f_req = [None, params_json]
-        f_req_json = json.dumps(f_req, separators=(",", ":"))
+        f_req_json = json.dumps(f_req, separators=(",", ":"), ensure_ascii=False)
 
         # URL encode with safe='' to encode all characters including /
         body_parts = [f"f.req={urllib.parse.quote(f_req_json, safe='')}"]
