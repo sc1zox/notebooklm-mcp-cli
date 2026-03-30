@@ -18,6 +18,8 @@ from typing import Any
 
 import httpx
 
+from notebooklm_tools.utils.config import get_base_url
+
 from . import constants
 from .data_types import ConversationTurn
 from .errors import ClientAuthenticationError as AuthenticationError
@@ -29,7 +31,6 @@ from .utils import (
     _format_debug_json,
     _parse_url_params,
 )
-from notebooklm_tools.utils.config import get_base_url
 
 # Configure logger (API internals only logged at DEBUG level, usually disabled)
 logger = logging.getLogger("notebooklm_mcp.api")
