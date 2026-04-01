@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.13] - 2026-03-31
+
+### Fixed
+- **Python 3.13 Crash in `nlm skill` (Issue #122)** — Fixed a crash when running `nlm skill install` on Python 3.13, which was caused by using `@click.option(type=Literal["user", "project"])`. Replaced with standard string validation. Thanks to **@zhaoguoqiao** for reporting!
+- **CDP Proxy Bypass (Issue #119)** — The `httpx` HTTP2 client was honoring system proxy settings even for the internal `127.0.0.1` CDP WebSocket acquisition call (`http://127.0.0.1:9222/json`). This caused connections to fail on machines running proxies. Restored the `proxy=None` argument to explicitly bypass proxies for local loopback connections. Thanks to **@sjs33** for discovering and reporting this!
+- **`research_status` Polling Loop (PR #120)** — Restored the internal polling loop for `research_status` when `max_wait` is set. Previously, the parameters were ignored after a refactor, and it always returned after a single check. The tool now correctly blocks and polls until the research is completed or times out. Thanks to **@byingyang** for the excellent bug report, full implementation, and test suite!
+
 ## [0.5.12] - 2026-03-30
 
 ### Fixed

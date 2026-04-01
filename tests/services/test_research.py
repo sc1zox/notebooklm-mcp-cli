@@ -1,7 +1,8 @@
 """Tests for services.research module."""
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from notebooklm_tools.core.errors import RPCError
 from notebooklm_tools.services.errors import ServiceError, ValidationError
