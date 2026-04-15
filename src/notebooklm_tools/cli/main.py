@@ -1,5 +1,9 @@
 """Main CLI application for NotebookLM Tools."""
 
+from notebooklm_tools.utils.io_encoding import configure_stdio_utf8_on_windows
+
+configure_stdio_utf8_on_windows()
+
 import contextlib
 import logging
 

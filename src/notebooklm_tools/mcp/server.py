@@ -21,6 +21,10 @@ import argparse
 import logging
 import os
 
+from notebooklm_tools.utils.io_encoding import configure_stdio_utf8_on_windows
+
+configure_stdio_utf8_on_windows()
+
 from fastmcp import FastMCP
 from starlette.requests import Request
 from starlette.responses import JSONResponse
